@@ -12,14 +12,152 @@ from docx.enum.table import WD_ALIGN_VERTICAL
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from db_connection import get_doc_db_connection
 
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
+from docx.shared import Pt
+from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
+
+
+# def add_table_of_contents(doc):
+#     """
+#     یک فیلد TOC استاندارد اضافه می‌کند.
+#     Word بعد از باز شدن سند با F9 یا Update Field شماره صفحات را می‌سازد.
+#     """
+#     p = doc.add_paragraph()                 # پاراگراف خالی برای فیلد
+#     run = p.add_run()
+
+#     # آغاز فیلد
+#     fld_begin = OxmlElement('w:fldChar')
+#     fld_begin.set(qn('w:fldCharType'), 'begin')
+#     run._r.append(fld_begin)
+
+#     # دستور TOC – تیترهای Heading1 تا Heading3، لینک‌دار (\\h) و بدون خطوط فرمت (\\z)
+#     instr = OxmlElement('w:instrText')
+#     instr.text = r'TOC \o "1-3" \h \z \u'   # \u جدول را راست‌چین می‌کند
+#     run._r.append(instr)
+
+#     # جداکننده
+#     fld_sep = OxmlElement('w:fldChar')
+#     fld_sep.set(qn('w:fldCharType'), 'separate')
+#     run._r.append(fld_sep)
+
+#     # متن موقتی که قبل از به‌روزرسانی دیده می‌شود
+#     dummy = OxmlElement('w:t')
+#     dummy.text = "برای به‌روزرسانی فهرست مطالب، کلید F9 را بزنید."
+#     run._r.append(dummy)
+
+#     # پایان فیلد
+#     fld_end = OxmlElement('w:fldChar')
+#     fld_end.set(qn('w:fldCharType'), 'end')
+#     run._r.append(fld_end)
+
+def add_table_of_contents(doc):
+    """
+    اضافه کردن فهرست مطالب با جهت راست به چپ و فونت سفارشی.
+    """
+
+    # پاراگراف فهرست مطالب
+    p = doc.add_paragraph()
+    p.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT  # راست‌چین
+
+    # جهت پاراگراف (راست به چپ)
+    p_para = p._p
+    pPr = p_para.get_or_add_pPr()
+    bidi = OxmlElement('w:bidi')
+    bidi.set(qn('w:val'), '1')
+    pPr.append(bidi)
+
+    run = p.add_run()
+
+    # فونت فارسی و انگلیسی
+    font = run.font
+    font.name = 'Times New Roman'     # این فقط برای متن لاتین مؤثر است
+    font.size = Pt(12)
+    rPr = run._element.get_or_add_rPr()
+
+    rFonts = OxmlElement('w:rFonts')
+    rFonts.set(qn('w:ascii'), 'Times New Roman')         # فونت انگلیسی
+    rFonts.set(qn('w:hAnsi'), 'Times New Roman')         # برای متن‌های لاتین
+    rFonts.set(qn('w:cs'), 'Complex')                    # فونت فارسی (Complex)
+    rPr.append(rFonts)
+
+    # آغاز فیلد
+    fld_begin = OxmlElement('w:fldChar')
+    fld_begin.set(qn('w:fldCharType'), 'begin')
+    run._r.append(fld_begin)
+
+    # دستور TOC
+    instr = OxmlElement('w:instrText')
+    instr.set(qn('xml:space'), 'preserve')  # حفظ فاصله‌ها
+    instr.text = r'TOC \o "1-3" \h \z \u'
+    run._r.append(instr)
+
+    # جداکننده
+    fld_sep = OxmlElement('w:fldChar')
+    fld_sep.set(qn('w:fldCharType'), 'separate')
+    run._r.append(fld_sep)
+
+    # متن موقتی
+    dummy = OxmlElement('w:t')
+    dummy.text = "برای به‌روزرسانی فهرست مطالب، کلید F9 را بزنید."
+    run._r.append(dummy)
+
+    # پایان فیلد
+    fld_end = OxmlElement('w:fldChar')
+    fld_end.set(qn('w:fldCharType'), 'end')
+    run._r.append(fld_end)
+
 # بارگذاری CSS برای راست به چپ (RTL)
 st.markdown(
     """
     <style>
-     
+    @font-face {
+        font-family: 'Vazir';
+        src: url('/app/static/media/Vazirmatn-Regular.woff2') format('woff2');
+        font-weight: normal;
+        font-style: normal;
+    }
     body {
         direction: rtl;
         text-align: right;        
+    }
+
+    .rtl {
+        direction: rtl;
+        text-align: right;
+        font-family: 'Vazir';
+        
+    }
+    input::placeholder {
+        text-align: right;
+        direction: rtl;
+        margin-top: -10px;
+        font-family: 'Vazir'; 
+    }
+    .custom-label {
+        direction: rtl;
+        text-align: right;
+        margin-bottom: -10px; 
+        font-family: 'Vazir'; 
+    }
+    .st-emotion-cache-162xg8y {
+        margin-top: -10px;  
+        margin-bottom: -10px; 
+        padding: 0px; 
+    }
+    .info{
+        font-family:Vazir;
+        background-color:#e1e1e1;
+        padding:10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
+    }
+    .success{
+        font-family:Vazir;
+        background-color:#eebbff;
+        padding:10px;
+        border-radius: 10px;
+        margin-bottom: 10px;
     }
     </style>
     """, unsafe_allow_html=True
@@ -111,19 +249,28 @@ def ensure_main_connection():
 
 
 def db_connection_form():
-    st.title("فرم اتصال به دیتابیس")
-    st.write("لطفاً اطلاعات دیتابیس خود را وارد کنید:")
+    
+    st.markdown('<h2 style="font-family:Vazir;" class="rtl">🧾 فرم اتصال به دیتابیس</h2>', unsafe_allow_html=True)
+    st.markdown('<h5 style="font-family:Vazir;" class="rtl">لطفاً اطلاعات دیتابیس خود را وارد کنید:</h5>', unsafe_allow_html=True)
+    # st.write("لطفاً اطلاعات دیتابیس خود را وارد کنید:")
 
-    db_type = st.selectbox("نوع دیتابیس", ["MySQL", "PostgreSQL"])
-    ip = st.text_input("IP دیتابیس", "127.0.0.1")
-    port = st.text_input("پورت دیتابیس", "3309" if db_type == "MySQL" else "5432")
-    user = st.text_input("یوزر")
-    password = st.text_input("پسورد", type="password")
-    db_name = st.text_input("نام دیتابیس")
+    st.markdown('<p class="custom-label">نوع دیتابیس</p>', unsafe_allow_html=True)
+    db_type = st.selectbox("", ["MySQL", "PostgreSQL"], label_visibility="hidden")
+    st.markdown('<p class="custom-label">IP دیتابیس</p>', unsafe_allow_html=True)
+    ip = st.text_input("", "127.0.0.1", label_visibility="hidden")
+    st.markdown('<p class="custom-label">پورت دیتابیس</p>', unsafe_allow_html=True)
+    port = st.text_input("", "3307" if db_type == "MySQL" else "5432", label_visibility="hidden")
+    st.markdown('<p class="custom-label">نام کاربری</p>', unsafe_allow_html=True)
+    user = st.text_input("یوزر", label_visibility="hidden")
+    st.markdown('<p class="custom-label">رمز عبور</p>', unsafe_allow_html=True)
+    password = st.text_input("", type="password", label_visibility="hidden")
+    st.markdown('<p class="custom-label">نام دیتابیس</p>', unsafe_allow_html=True)
+    db_name = st.text_input("نام دیتابیس", label_visibility="hidden")
 
     if st.button("اتصال به دیتابیس"):
         if not db_name:
-            st.error("لطفاً نام دیتابیس را وارد کنید.")
+            #st.error("لطفاً نام دیتابیس را وارد کنید.")
+            st.markdown('<p class="custom-label info">📛 لطفاً نام دیتابیس را وارد کنید.</p>', unsafe_allow_html=True)
         else:
             tables = connect_to_db(db_type, ip, port, user, password, db_name)
             excluded_tables = [
@@ -158,21 +305,7 @@ def is_persian_or_digit(text):
         return False
     return True
 
-# def set_bidi_alignment(paragraph):
-#     paragraph.alignment = WD_PARAGRAPH_ALIGNMENT.LEFT
-#     p = paragraph._element
-#     pPr = p.get_or_add_pPr()
 
-#     for node in pPr.findall(qn('w:bidi')):
-#         pPr.remove(node)
-
-#     bidi = OxmlElement('w:bidi')
-#     bidi.set(qn('w:val'), '1')
-#     pPr.append(bidi)
-
-#     lang = OxmlElement('w:lang')
-#     lang.set(qn('w:val'), 'fa-IR')
-#     pPr.append(lang)
 def set_bidi_alignment(paragraph):
     p = paragraph._element
     pPr = p.get_or_add_pPr()
@@ -408,7 +541,7 @@ def db_tables_page():
             cover_para = document.add_paragraph()
             cover_para.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
             set_bidi_alignment(cover_para)
-            cover_run = cover_para.add_run('مستند بانک اطلاعاتی\n\n\n\n\n\n\nسامانه جامع عمران روستایی\nبنیاد مسکن انقلاب اسلامی')
+            cover_run = cover_para.add_run('مستند بانک اطلاعاتی\n\n\n\n\n\n\nنام فارسی دیتابیس\nنام سازمان')
             cover_run.font.name = 'B Titr'
             cover_run._element.rPr.rFonts.set(qn('w:cs'), 'B Titr')
             cover_run.font.size = Pt(18)
@@ -444,6 +577,9 @@ def db_tables_page():
             cover_run.font.name = 'B Titr'
             cover_run._element.rPr.rFonts.set(qn('w:cs'), 'B Titr')
             cover_run.font.size = Pt(14)
+
+            add_table_of_contents(document)
+
             
             document.add_page_break()
 
@@ -863,6 +999,8 @@ def db_tables_page():
                 progress_bar.progress(percent)
             file_name = f"{db_name}.docx"
             document.save(file_name)
+
+
 
             with open(file_name, "rb") as file:
                 st.download_button(
