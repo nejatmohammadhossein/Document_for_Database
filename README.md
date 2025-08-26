@@ -1,54 +1,55 @@
 
 
-# 📊 راهنمای اجرای پروژه document for database (MYSQL, POSTGRES)
+# 📊 Project Implementation Guide: Document for Database (MYSQL, POSTGRES)
 
-## 1️⃣ ساخت محیط مجازی پایتون
+## 1️⃣ Creating a Python Virtual Environment
 
 ```bash
 python -m venv venv
 ```
+* Execue the sql file in the mysql.
 
-## 2️⃣ فعال‌سازی محیط مجازی
+## 2️⃣ Activate a Virtual Environment
 
-### ✅ ویندوز:
+### ✅ Windows:
 
 ```bash
 venv\Scripts\activate
 ```
 
-### ✅ لینوکس / macOS:
+### ✅ Linux / macOS:
 
 ```bash
 source venv/bin/activate
 ```
 
-## 3️⃣ نصب وابستگی‌ها
+## 3️⃣ Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## 4️⃣ انتقال فایل‌های استاتیک
+## 4️⃣ move static files
 
-### 📁 فونت Vazir:
+### 📁 Vazir font:
 
-به مسیر زیر منتقل شود:
+move to this path:
 
 ```
 venv\Lib\site-packages\streamlit\static\static\media
 ```
 
-### 📁 فایل favicon.ico:
+### 📁 favicon.ico file:
 
-به مسیر زیر منتقل شود:
+move to this path:
 
 ```
 venv\Lib\site-packages\streamlit\static
 ```
 
-> 🔸 اگر از Linux استفاده می‌کنید، مسیرها ممکن است کمی متفاوت باشد. لطفاً بر اساس محل نصب Streamlit در محیط مجازی تنظیم شود.
+> 🔸 If you are using Linux, the paths may be slightly different. Please adjust based on where Streamlit is installed in the virtual environment..
 
-## 5️⃣ اجرای پروژه
+## 5️⃣ run the project
 
 ```bash
 streamlit run app.py
@@ -56,17 +57,17 @@ streamlit run app.py
 
 ---
 
-## ℹ️ نکات تکمیلی
+## ℹ️ Additional notes
 
-* پروژه روی Python 3.10 تست شده است.
-* برای اجرای صحیح، دسترسی به JIRA در شبکه داخلی الزامی است.
-* UI پروژه با استفاده از Streamlit طراحی شده است.
+* The project has been tested on Python 3.10.
+* The project UI has been designed using Streamlit.
+* the internal database is Mysql.
 
 ---
 
 ## 📦 وابستگی‌ها
 
-تمام پکیج‌های مورد نیاز در فایل `requirements.txt` موجود است و با دستور بالا نصب می‌شوند (از جمله `openpyxl`, `requests`, `streamlit` و ...).
+All required packages are available in the `requirements.txt` file and are installed with the above command (including `openpyxl`, `requests`, `streamlit`, etc.).
 
 ---
 
