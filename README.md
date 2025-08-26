@@ -1,7 +1,7 @@
 
 
 # 📊 Project Implementation Guide: 
-Document for Database (MYSQL, POSTGRES)
+# Document for Database (MYSQL, POSTGRES)
 
 ## 1️⃣ Creating a Python Virtual Environment
 
