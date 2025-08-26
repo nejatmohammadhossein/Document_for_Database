@@ -1,6 +1,6 @@
 
 
-# 📊 راهنمای اجرای پروژه JIRA Reporter
+# 📊 راهنمای اجرای پروژه document for database (MYSQL, POSTGRES)
 
 ## 1️⃣ ساخت محیط مجازی پایتون
 
