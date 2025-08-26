@@ -66,7 +66,7 @@ streamlit run app.py
 
 ---
 
-## 📦 وابستگی‌ها
+## 📦 Dependencies
 
 All required packages are available in the `requirements.txt` file and are installed with the above command (including `openpyxl`, `requests`, `streamlit`, etc.).
 
